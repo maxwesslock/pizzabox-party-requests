@@ -665,6 +665,34 @@ header {
   color: var(--muted);
 }
 
+/* ── Inline Edit ─────────────────────────────────────────────────────────── */
+.edit-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0 2px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.edit-btn:hover { color: var(--red); }
+
+.edit-input {
+  width: 100%;
+  background: var(--cream);
+  border: 1.5px solid var(--red);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--ink);
+  outline: none;
+  margin-bottom: 6px;
+}
+
+.edit-actions { display: flex; gap: 6px; }
+
 @media (max-width: 700px) {
   .list-pane { width: 100%; border-right: none; }
   .main { flex-direction: column; }
@@ -941,20 +969,24 @@ function renderDetail(id) {
       <!-- Info Grid -->
       <div class="info-grid">
         <div class="info-block">
-          <div class="info-label">Email</div>
-          <div class="info-value mono">${r.email ? `<a href="mailto:${esc(r.email)}" style="color:var(--red)">${esc(r.email)}</a>` : '—'}</div>
+          <div class="info-label" style="display:flex;align-items:center;justify-content:space-between;">Email <button class="edit-btn" onclick="startEdit('${r.id}','email')">✎</button></div>
+          <div id="view-email-${r.id}" class="info-value mono">${r.email ? `<a href="mailto:${esc(r.email)}" style="color:var(--red)">${esc(r.email)}</a>` : '—'}</div>
+          <div id="edit-email-${r.id}" style="display:none"><input class="edit-input" value="${esc(r.email)}" onkeydown="if(event.key==='Enter')saveEdit('${r.id}','email',this.value);if(event.key==='Escape')cancelEdit('${r.id}','email')" /><div class="edit-actions"><button class="btn btn-save" style="padding:4px 10px;font-size:10px" onclick="saveEdit('${r.id}','email',document.querySelector('#edit-email-${r.id} input').value)">Save</button><button class="btn btn-outline" style="padding:4px 10px;font-size:10px" onclick="cancelEdit('${r.id}','email')">Cancel</button></div></div>
         </div>
         <div class="info-block">
-          <div class="info-label">Phone</div>
-          <div class="info-value mono">${r.phone ? `<a href="tel:${esc(r.phone)}" style="color:var(--red)">${esc(r.phone)}</a>` : '—'}</div>
+          <div class="info-label" style="display:flex;align-items:center;justify-content:space-between;">Phone <button class="edit-btn" onclick="startEdit('${r.id}','phone')">✎</button></div>
+          <div id="view-phone-${r.id}" class="info-value mono">${r.phone ? `<a href="tel:${esc(r.phone)}" style="color:var(--red)">${esc(r.phone)}</a>` : '—'}</div>
+          <div id="edit-phone-${r.id}" style="display:none"><input class="edit-input" value="${esc(r.phone)}" onkeydown="if(event.key==='Enter')saveEdit('${r.id}','phone',this.value);if(event.key==='Escape')cancelEdit('${r.id}','phone')" /><div class="edit-actions"><button class="btn btn-save" style="padding:4px 10px;font-size:10px" onclick="saveEdit('${r.id}','phone',document.querySelector('#edit-phone-${r.id} input').value)">Save</button><button class="btn btn-outline" style="padding:4px 10px;font-size:10px" onclick="cancelEdit('${r.id}','phone')">Cancel</button></div></div>
         </div>
         <div class="info-block">
-          <div class="info-label">Party Date</div>
-          <div class="info-value">${esc(r.party_date) || '—'}</div>
+          <div class="info-label" style="display:flex;align-items:center;justify-content:space-between;">Party Date <button class="edit-btn" onclick="startEdit('${r.id}','party_date')">✎</button></div>
+          <div id="view-party_date-${r.id}" class="info-value">${esc(r.party_date) || '—'}</div>
+          <div id="edit-party_date-${r.id}" style="display:none"><input class="edit-input" value="${esc(r.party_date)}" onkeydown="if(event.key==='Enter')saveEdit('${r.id}','party_date',this.value);if(event.key==='Escape')cancelEdit('${r.id}','party_date')" /><div class="edit-actions"><button class="btn btn-save" style="padding:4px 10px;font-size:10px" onclick="saveEdit('${r.id}','party_date',document.querySelector('#edit-party_date-${r.id} input').value)">Save</button><button class="btn btn-outline" style="padding:4px 10px;font-size:10px" onclick="cancelEdit('${r.id}','party_date')">Cancel</button></div></div>
         </div>
         <div class="info-block">
-          <div class="info-label">Guest Count</div>
-          <div class="info-value">${esc(r.guest_count) || '—'}</div>
+          <div class="info-label" style="display:flex;align-items:center;justify-content:space-between;">Guest Count <button class="edit-btn" onclick="startEdit('${r.id}','guest_count')">✎</button></div>
+          <div id="view-guest_count-${r.id}" class="info-value">${esc(r.guest_count) || '—'}</div>
+          <div id="edit-guest_count-${r.id}" style="display:none"><input class="edit-input" value="${esc(r.guest_count)}" onkeydown="if(event.key==='Enter')saveEdit('${r.id}','guest_count',this.value);if(event.key==='Escape')cancelEdit('${r.id}','guest_count')" /><div class="edit-actions"><button class="btn btn-save" style="padding:4px 10px;font-size:10px" onclick="saveEdit('${r.id}','guest_count',document.querySelector('#edit-guest_count-${r.id} input').value)">Save</button><button class="btn btn-outline" style="padding:4px 10px;font-size:10px" onclick="cancelEdit('${r.id}','guest_count')">Cancel</button></div></div>
         </div>
         <div class="info-block">
           <div class="info-label">Received</div>
@@ -1249,6 +1281,28 @@ function openCalModal(id) {
 
 function closeCalModal() {
   document.getElementById('cal-modal').classList.add('hidden');
+}
+
+// ── Inline Edit ───────────────────────────────────────────────────────────────
+function startEdit(id, field) {
+  document.getElementById(`view-${field}-${id}`).style.display = 'none';
+  const editEl = document.getElementById(`edit-${field}-${id}`);
+  editEl.style.display = 'block';
+  editEl.querySelector('input').focus();
+}
+
+function cancelEdit(id, field) {
+  document.getElementById(`view-${field}-${id}`).style.display = '';
+  document.getElementById(`edit-${field}-${id}`).style.display = 'none';
+}
+
+async function saveEdit(id, field, value) {
+  try {
+    await patchRequest(id, { [field]: value });
+    renderList();
+    renderDetail(id);
+    showToast('Updated', 'success');
+  } catch { showToast('Failed to update', 'error'); }
 }
 
 // ── Admin ─────────────────────────────────────────────────────────────────────
