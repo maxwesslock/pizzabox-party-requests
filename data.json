@@ -1,0 +1,64 @@
+{
+  "requests": [
+    {
+      "id": "mpwbtbxyak8q6",
+      "status": "new",
+      "name": "Test Guest",
+      "email": "test@gmail.com",
+      "phone": "212-555-0100",
+      "party_date": "Saturday August 9 2025",
+      "guest_count": "20",
+      "message": "We want to book a birthday party for 20 people!",
+      "received_at": "2025-06-21T14:00:00.000Z",
+      "notes": "",
+      "replied": false,
+      "created_at": "2026-06-02T07:38:50.422Z",
+      "updated_at": "2026-06-02T07:38:50.422Z"
+    },
+    {
+      "id": "seed001",
+      "status": "confirmed",
+      "name": "Sofia Marchetti",
+      "email": "sofia.m@gmail.com",
+      "phone": "917-555-0182",
+      "party_date": "Saturday July 12 2025",
+      "guest_count": "24",
+      "message": "Hi! We'd love to book a private party for my daughter's 10th birthday. We're looking at a Saturday in July, around 24 kids plus parents. Do you have a private room or can you accommodate a big group? We'd want a set menu with pizza and some appetizers. Budget is flexible. Please let me know availability and pricing. Thank you so much!",
+      "notes": "Called Sofia to confirm. Set menu agreed: 4 pies, garlic knots, salad, soft drinks. Deposit received $200.",
+      "replied": true,
+      "received_at": "2025-06-18T14:32:00.000Z",
+      "created_at": "2025-06-18T14:32:00.000Z",
+      "updated_at": "2026-06-02T07:38:12.607Z"
+    },
+    {
+      "id": "seed002",
+      "status": "pending",
+      "name": "Marcus Webb",
+      "email": "marcuswebb@outlook.com",
+      "phone": "646-555-0247",
+      "party_date": "Friday July 25 2025",
+      "guest_count": "15",
+      "message": "Hey, looking to book a birthday dinner for my buddy turning 40. About 15 people, Friday night. Would need the space from like 7pm-10pm. Open bar possible? Let me know what you can do.",
+      "notes": "Waiting on callback — left voicemail 6/20",
+      "replied": false,
+      "received_at": "2025-06-19T09:10:00.000Z",
+      "created_at": "2025-06-19T09:10:00.000Z",
+      "updated_at": "2025-06-20T16:00:00.000Z"
+    },
+    {
+      "id": "seed003",
+      "status": "new",
+      "name": "Priya Nair",
+      "email": "priya.nair88@gmail.com",
+      "phone": "",
+      "party_date": "August 2025",
+      "guest_count": "30",
+      "message": "Hello! I'm interested in hosting a corporate team lunch for about 30 people sometime in August. We'd want a private or semi-private setup, family-style food. Is that something you can do on a weekday? Please send pricing info.",
+      "notes": "",
+      "replied": false,
+      "received_at": "2025-06-21T11:45:00.000Z",
+      "created_at": "2025-06-21T11:45:00.000Z",
+      "updated_at": "2025-06-21T11:45:00.000Z"
+    }
+  ]
+}

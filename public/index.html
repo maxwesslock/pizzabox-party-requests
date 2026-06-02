@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Pizza Box NY — Party Requests</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+
+<style>
+/* ── Reset & Base ────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --red:     #C8171B;
+  --red-dk:  #9E1215;
+  --cream:   #F5EFE0;
+  --paper:   #EDE7D3;
+  --ink:     #1A1510;
+  --ink-lt:  #3D3020;
+  --muted:   #8A7A60;
+  --gold:    #C8993A;
+  --green:   #2A6B3F;
+  --green-lt:#D4EDDA;
+  --amber:   #B8680A;
+  --amber-lt:#FDF0DC;
+  --blue:    #1A4B8C;
+  --blue-lt: #DCE9F8;
+  --border:  #D4C9A8;
+  --shadow:  rgba(26,21,16,0.12);
+}
+
+html { background: var(--ink); }
+
+body {
+  font-family: 'Lora', serif;
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+header {
+  background: var(--red);
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 3px solid var(--red-dk);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  min-height: 64px;
+}
+
+.header-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.header-brand h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  color: var(--cream);
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.header-brand span {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: rgba(245,239,224,0.6);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-icon {
+  background: rgba(245,239,224,0.15);
+  border: 1px solid rgba(245,239,224,0.25);
+  color: var(--cream);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: background 0.15s;
+}
+.btn-icon:hover { background: rgba(245,239,224,0.25); }
+
+/* ── Tab Bar ─────────────────────────────────────────────────────────────── */
+.tab-bar {
+  background: var(--paper);
+  border-bottom: 2px solid var(--border);
+  display: flex;
+  align-items: stretch;
+  padding: 0 32px;
+  gap: 0;
+  overflow-x: auto;
+}
+
+.tab {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 14px 20px 12px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab:hover { color: var(--ink); }
+
+.tab.active {
+  color: var(--red);
+  border-bottom-color: var(--red);
+}
+
+.tab-count {
+  background: var(--red);
+  color: #fff;
+  border-radius: 10px;
+  padding: 1px 7px;
+  font-size: 10px;
+  line-height: 1.6;
+  min-width: 20px;
+  text-align: center;
+}
+
+.tab:not(.active) .tab-count { background: var(--border); color: var(--muted); }
+.tab.active .tab-count { background: var(--red); color: #fff; }
+
+/* ── Main Layout ─────────────────────────────────────────────────────────── */
+.main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.list-pane {
+  width: 380px;
+  min-width: 300px;
+  border-right: 2px solid var(--border);
+  background: var(--paper);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-pane {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--cream);
+}
+
+/* ── Request Cards ───────────────────────────────────────────────────────── */
+.list-empty {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--muted);
+  font-style: italic;
+  font-size: 14px;
+}
+
+.request-card {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.12s;
+  position: relative;
+}
+
+.request-card:hover { background: rgba(200,23,27,0.04); }
+.request-card.selected { background: rgba(200,23,27,0.08); }
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.card-name {
+  font-family: 'Lora', serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--ink);
+  line-height: 1.3;
+}
+
+.status-pill {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.status-new      { background: var(--blue-lt);  color: var(--blue); }
+.status-pending  { background: var(--amber-lt); color: var(--amber); }
+.status-confirmed{ background: var(--green-lt); color: var(--green); }
+.status-past     { background: var(--border);   color: var(--muted); }
+
+.card-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  gap: 12px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.card-snippet {
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.unread-dot {
+  position: absolute;
+  left: 8px;
+  top: 20px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--red);
+}
+
+/* ── Detail Pane ─────────────────────────────────────────────────────────── */
+.detail-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 400px;
+  color: var(--muted);
+  gap: 12px;
+  padding: 48px;
+  text-align: center;
+}
+
+.detail-empty .pizza-icon {
+  font-size: 64px;
+  opacity: 0.3;
+}
+
+.detail-empty p { font-style: italic; }
+
+.detail-content {
+  padding: 32px;
+  max-width: 700px;
+}
+
+.detail-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.detail-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 38px;
+  color: var(--ink);
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.detail-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ── Info Grid ───────────────────────────────────────────────────────────── */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.info-block {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.info-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.info-value {
+  font-size: 14px;
+  color: var(--ink);
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.info-value.mono {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+}
+
+/* ── Message Box ─────────────────────────────────────────────────────────── */
+.message-box {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--red);
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin-bottom: 20px;
+}
+
+.message-box .info-label { margin-bottom: 8px; }
+
+.message-text {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink-lt);
+  white-space: pre-wrap;
+}
+
+/* ── Notes ───────────────────────────────────────────────────────────────── */
+.notes-area {
+  margin-bottom: 20px;
+}
+
+.notes-area .info-label { margin-bottom: 6px; }
+
+.notes-textarea {
+  width: 100%;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: 'Lora', serif;
+  font-size: 14px;
+  color: var(--ink);
+  resize: vertical;
+  min-height: 100px;
+  transition: border-color 0.15s;
+  line-height: 1.6;
+}
+
+.notes-textarea:focus {
+  outline: none;
+  border-color: var(--red);
+}
+
+/* ── Status Selector ─────────────────────────────────────────────────────── */
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.status-label-sm {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-right: 4px;
+}
+
+.status-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1.5px solid var(--border);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.status-btn:hover { border-color: var(--ink); color: var(--ink); }
+.status-btn.active-new       { background: var(--blue-lt);  color: var(--blue);  border-color: var(--blue); }
+.status-btn.active-pending   { background: var(--amber-lt); color: var(--amber); border-color: var(--amber); }
+.status-btn.active-confirmed { background: var(--green-lt); color: var(--green); border-color: var(--green); }
+.status-btn.active-past      { background: var(--border);   color: var(--muted); border-color: var(--muted); }
+
+/* ── Action Buttons ──────────────────────────────────────────────────────── */
+.btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 9px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-primary { background: var(--red); color: #fff; }
+.btn-primary:hover { background: var(--red-dk); }
+
+.btn-outline {
+  background: none;
+  border: 1.5px solid var(--border);
+  color: var(--ink-lt);
+}
+.btn-outline:hover { border-color: var(--ink); color: var(--ink); }
+
+.btn-green { background: var(--green); color: #fff; }
+.btn-green:hover { background: #1f5230; }
+
+.btn-danger { background: none; border: 1.5px solid #d9534f; color: #d9534f; }
+.btn-danger:hover { background: #d9534f; color: #fff; }
+
+.btn-save {
+  background: var(--gold);
+  color: #fff;
+}
+.btn-save:hover { background: #a8802e; }
+
+/* ── Reply Modal ─────────────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26,21,16,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 24px;
+}
+
+.modal-overlay.hidden { display: none; }
+
+.modal {
+  background: var(--cream);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 580px;
+  padding: 28px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px;
+  letter-spacing: 1px;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.modal-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.modal-textarea {
+  width: 100%;
+  background: var(--paper);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  font-family: 'Lora', serif;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink);
+  resize: vertical;
+  min-height: 200px;
+  margin-bottom: 16px;
+}
+.modal-textarea:focus { outline: none; border-color: var(--red); }
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* ── Toast ───────────────────────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--ink);
+  color: var(--cream);
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  padding: 12px 18px;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  z-index: 300;
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.25s ease;
+  max-width: 320px;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-left: 4px solid var(--green); }
+.toast.error   { border-left: 4px solid var(--red); }
+
+/* ── Divider ─────────────────────────────────────────────────────────────── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 20px 0;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .list-pane { width: 100%; border-right: none; }
+  .main { flex-direction: column; }
+  .detail-pane { display: none; }
+  .detail-pane.mobile-active { display: block; }
+  .list-pane.mobile-hidden { display: none; }
+  .info-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header>
+  <div class="header-brand">
+    <h1>🍕 The Pizza Box NY</h1>
+    <span>Party Requests</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn-icon" onclick="refreshData()">↻ Refresh</button>
+    <button class="btn-icon" onclick="confirmClear()">⚠ Clear All</button>
+    <button class="btn-icon" onclick="seedData()">⊕ Seed</button>
+  </div>
+</header>
+
+<!-- ── Tab Bar ── -->
+<nav class="tab-bar">
+  <button class="tab active" data-tab="all"       onclick="switchTab('all')">All <span class="tab-count" id="count-all">0</span></button>
+  <button class="tab"        data-tab="new"       onclick="switchTab('new')">New <span class="tab-count" id="count-new">0</span></button>
+  <button class="tab"        data-tab="pending"   onclick="switchTab('pending')">Pending <span class="tab-count" id="count-pending">0</span></button>
+  <button class="tab"        data-tab="confirmed" onclick="switchTab('confirmed')">Confirmed <span class="tab-count" id="count-confirmed">0</span></button>
+  <button class="tab"        data-tab="past"      onclick="switchTab('past')">Past <span class="tab-count" id="count-past">0</span></button>
+</nav>
+
+<!-- ── Main Layout ── -->
+<div class="main" id="main">
+  <!-- List Pane -->
+  <div class="list-pane" id="list-pane">
+    <div id="card-list">
+      <div class="list-empty">Loading requests…</div>
+    </div>
+  </div>
+
+  <!-- Detail Pane -->
+  <div class="detail-pane" id="detail-pane">
+    <div class="detail-empty">
+      <div class="pizza-icon">🍕</div>
+      <p>Select a request to view details</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── Reply Modal ── -->
+<div class="modal-overlay hidden" id="reply-modal">
+  <div class="modal">
+    <div class="modal-title">Reply to Guest</div>
+    <div class="modal-sub" id="reply-modal-sub">Opens in your default email client</div>
+    <textarea class="modal-textarea" id="reply-body" placeholder="Type your reply…"></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="sendReply()">Open in Mail →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Toast ── -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ─────────────────────────────────────────────────────────────────────
+let allRequests = [];
+let currentTab = 'all';
+let selectedId = null;
+let replyTarget = null;
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  refreshData();
+  // Poll every 30s for new requests
+  setInterval(refreshData, 30000);
+});
+
+// ── Data ──────────────────────────────────────────────────────────────────────
+async function refreshData() {
+  try {
+    const res = await fetch('/api/requests');
+    allRequests = await res.json();
+    renderList();
+    updateCounts();
+    if (selectedId) renderDetail(selectedId);
+  } catch (e) {
+    showToast('Could not load data', 'error');
+  }
+}
+
+async function patchRequest(id, data) {
+  const res = await fetch(`/api/requests/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error('Patch failed');
+  const updated = await res.json();
+  const idx = allRequests.findIndex(r => r.id === id);
+  if (idx !== -1) allRequests[idx] = updated;
+  return updated;
+}
+
+async function deleteRequest(id) {
+  await fetch(`/api/requests/${id}`, { method: 'DELETE' });
+  allRequests = allRequests.filter(r => r.id !== id);
+  if (selectedId === id) {
+    selectedId = null;
+    document.getElementById('detail-pane').innerHTML = `
+      <div class="detail-empty">
+        <div class="pizza-icon">🍕</div>
+        <p>Select a request to view details</p>
+      </div>`;
+  }
+}
+
+// ── Tab ───────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  renderList();
+}
+
+function filteredRequests() {
+  if (currentTab === 'all') return allRequests;
+  return allRequests.filter(r => r.status === currentTab);
+}
+
+// ── Counts ────────────────────────────────────────────────────────────────────
+function updateCounts() {
+  ['new','pending','confirmed','past'].forEach(s => {
+    document.getElementById(`count-${s}`).textContent = allRequests.filter(r => r.status === s).length;
+  });
+  document.getElementById('count-all').textContent = allRequests.length;
+}
+
+// ── List Render ───────────────────────────────────────────────────────────────
+function renderList() {
+  const list = filteredRequests();
+  const el = document.getElementById('card-list');
+
+  if (!list.length) {
+    el.innerHTML = `<div class="list-empty">No ${currentTab === 'all' ? '' : currentTab + ' '}requests yet.</div>`;
+    return;
+  }
+
+  el.innerHTML = list.map(r => {
+    const isSelected = r.id === selectedId;
+    const date = formatDate(r.received_at);
+    const unread = !r.replied && r.status === 'new';
+    return `
+      <div class="request-card ${isSelected ? 'selected' : ''}" onclick="selectRequest('${r.id}')">
+        ${unread ? '<div class="unread-dot"></div>' : ''}
+        <div class="card-header">
+          <div class="card-name">${esc(r.name)}</div>
+          <span class="status-pill status-${r.status}">${r.status}</span>
+        </div>
+        <div class="card-meta">
+          ${r.party_date ? `<span>📅 ${esc(r.party_date)}</span>` : ''}
+          ${r.guest_count ? `<span>👥 ${esc(r.guest_count)}</span>` : ''}
+          <span>${date}</span>
+        </div>
+        <div class="card-snippet">${esc(r.message)}</div>
+      </div>`;
+  }).join('');
+}
+
+// ── Detail Render ─────────────────────────────────────────────────────────────
+function selectRequest(id) {
+  selectedId = id;
+  renderList();
+  renderDetail(id);
+}
+
+function renderDetail(id) {
+  const r = allRequests.find(x => x.id === id);
+  if (!r) return;
+
+  const pane = document.getElementById('detail-pane');
+  pane.innerHTML = `
+    <div class="detail-content">
+      <div class="detail-top">
+        <div class="detail-name">${esc(r.name)}</div>
+        <div class="detail-actions">
+          <button class="btn btn-primary" onclick="openReplyModal('${r.id}')">✉ Reply</button>
+          ${r.status === 'confirmed' ? `<button class="btn btn-green" onclick="openCalendar('${r.id}')">📅 Add to Calendar</button>` : ''}
+          <button class="btn btn-danger" onclick="handleDelete('${r.id}')">✕</button>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="status-row">
+        <span class="status-label-sm">Status:</span>
+        ${['new','pending','confirmed','past'].map(s => `
+          <button class="status-btn ${r.status === s ? 'active-' + s : ''}"
+            onclick="handleStatusChange('${r.id}', '${s}')">${s}</button>
+        `).join('')}
+      </div>
+
+      <!-- Info Grid -->
+      <div class="info-grid">
+        <div class="info-block">
+          <div class="info-label">Email</div>
+          <div class="info-value mono">${r.email ? `<a href="mailto:${esc(r.email)}" style="color:var(--red)">${esc(r.email)}</a>` : '—'}</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Phone</div>
+          <div class="info-value mono">${r.phone ? `<a href="tel:${esc(r.phone)}" style="color:var(--red)">${esc(r.phone)}</a>` : '—'}</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Party Date</div>
+          <div class="info-value">${esc(r.party_date) || '—'}</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Guest Count</div>
+          <div class="info-value">${esc(r.guest_count) || '—'}</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Received</div>
+          <div class="info-value mono" style="font-size:12px">${formatDateFull(r.received_at)}</div>
+        </div>
+        <div class="info-block">
+          <div class="info-label">Replied</div>
+          <div class="info-value">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+              <input type="checkbox" ${r.replied ? 'checked' : ''} onchange="handleRepliedToggle('${r.id}', this.checked)" />
+              <span>${r.replied ? 'Yes' : 'Not yet'}</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Message -->
+      <div class="message-box">
+        <div class="info-label">Original Message</div>
+        <div class="message-text">${esc(r.message) || '(no message)'}</div>
+      </div>
+
+      <!-- Notes -->
+      <div class="notes-area">
+        <div class="info-label">Internal Notes</div>
+        <textarea class="notes-textarea" id="notes-${r.id}" placeholder="Add notes, deposit info, menu agreed, etc…">${esc(r.notes)}</textarea>
+      </div>
+      <button class="btn btn-save" onclick="saveNotes('${r.id}')">💾 Save Notes</button>
+
+      <hr class="divider" style="margin-top:24px"/>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px">
+        ID: ${r.id} · Updated ${formatDateFull(r.updated_at)}
+      </div>
+    </div>`;
+}
+
+// ── Handlers ──────────────────────────────────────────────────────────────────
+async function handleStatusChange(id, status) {
+  try {
+    await patchRequest(id, { status });
+    renderList();
+    renderDetail(id);
+    updateCounts();
+    showToast(`Marked as ${status}`, 'success');
+  } catch { showToast('Failed to update status', 'error'); }
+}
+
+async function handleRepliedToggle(id, replied) {
+  try {
+    await patchRequest(id, { replied });
+    renderList();
+    updateCounts();
+    showToast(replied ? 'Marked as replied' : 'Marked as not replied', 'success');
+  } catch { showToast('Failed to update', 'error'); }
+}
+
+async function saveNotes(id) {
+  const notes = document.getElementById(`notes-${id}`)?.value ?? '';
+  try {
+    await patchRequest(id, { notes });
+    showToast('Notes saved', 'success');
+  } catch { showToast('Failed to save notes', 'error'); }
+}
+
+async function handleDelete(id) {
+  if (!confirm('Delete this request? This cannot be undone.')) return;
+  try {
+    await deleteRequest(id);
+    renderList();
+    updateCounts();
+    showToast('Request deleted', 'success');
+  } catch { showToast('Failed to delete', 'error'); }
+}
+
+async function openCalendar(id) {
+  try {
+    const res = await fetch(`/api/requests/${id}/calendar-link`);
+    const { url } = await res.json();
+    window.open(url, '_blank');
+  } catch { showToast('Could not generate calendar link', 'error'); }
+}
+
+// ── Reply Modal ───────────────────────────────────────────────────────────────
+function openReplyModal(id) {
+  const r = allRequests.find(x => x.id === id);
+  if (!r) return;
+  replyTarget = r;
+
+  document.getElementById('reply-modal-sub').textContent = `To: ${r.email || '(no email on file)'}`;
+  document.getElementById('reply-body').value = defaultReply(r);
+  document.getElementById('reply-modal').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('reply-modal').classList.add('hidden');
+  replyTarget = null;
+}
+
+function sendReply() {
+  if (!replyTarget) return;
+  const body = document.getElementById('reply-body').value;
+  const subject = encodeURIComponent(`Re: Party Request — The Pizza Box NY`);
+  const bodyEnc = encodeURIComponent(body);
+  const mailto = `mailto:${replyTarget.email}?subject=${subject}&body=${bodyEnc}`;
+  window.location.href = mailto;
+
+  // Mark as replied
+  patchRequest(replyTarget.id, { replied: true }).then(() => {
+    renderList();
+    if (selectedId === replyTarget.id) renderDetail(replyTarget.id);
+    updateCounts();
+  });
+
+  closeModal();
+}
+
+function defaultReply(r) {
+  return `Hi ${r.name.split(' ')[0]},
+
+Thanks so much for reaching out about hosting your party at The Pizza Box NY!
+
+We'd love to have you. ${r.party_date ? `You mentioned ${r.party_date} — ` : ''}let me check availability and get back to you with details on our party packages and pricing.
+
+In the meantime, feel free to call us directly at [PHONE] if you have any questions.
+
+Looking forward to it!
+
+— The Pizza Box NY
+Bleecker Street, Greenwich Village`;
+}
+
+// ── Admin ─────────────────────────────────────────────────────────────────────
+async function confirmClear() {
+  if (!confirm('Clear ALL party request data? This cannot be undone.')) return;
+  await fetch('/admin/clear', { method: 'POST' });
+  allRequests = [];
+  selectedId = null;
+  renderList();
+  updateCounts();
+  document.getElementById('detail-pane').innerHTML = `
+    <div class="detail-empty">
+      <div class="pizza-icon">🍕</div>
+      <p>Select a request to view details</p>
+    </div>`;
+  showToast('All data cleared', 'success');
+}
+
+async function seedData() {
+  if (!confirm('Reset data to seed example? This overwrites current data.')) return;
+  await fetch('/admin/seed', { method: 'POST' });
+  await refreshData();
+  showToast('Seeded with example data', 'success');
+}
+
+// ── Utilities ─────────────────────────────────────────────────────────────────
+function esc(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+function formatDate(iso) {
+  if (!iso) return '';
+  try {
+    return new Date(iso).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  } catch { return iso; }
+}
+
+function formatDateFull(iso) {
+  if (!iso) return '';
+  try {
+    return new Date(iso).toLocaleString('en-US', { month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit' });
+  } catch { return iso; }
+}
+
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type}`;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
