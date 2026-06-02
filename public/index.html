@@ -705,6 +705,17 @@ header {
 <div class="main" id="main">
   <!-- List Pane -->
   <div class="list-pane" id="list-pane">
+    <div style="padding:12px 16px; border-bottom:1px solid var(--border); background:var(--paper);">
+      <input
+        type="text"
+        id="search-input"
+        placeholder="Search name, email, phone…"
+        oninput="renderList()"
+        style="width:100%; background:var(--cream); border:1.5px solid var(--border); border-radius:6px; padding:8px 12px; font-family:'DM Mono',monospace; font-size:12px; color:var(--ink); outline:none; transition:border-color 0.15s;"
+        onfocus="this.style.borderColor='var(--red)'"
+        onblur="this.style.borderColor='var(--border)'"
+      />
+    </div>
     <div id="card-list">
       <div class="list-empty">Loading requests…</div>
     </div>
@@ -844,8 +855,16 @@ function switchTab(tab) {
 }
 
 function filteredRequests() {
-  if (currentTab === 'all') return allRequests;
-  return allRequests.filter(r => r.status === currentTab);
+  let list = currentTab === 'all' ? allRequests : allRequests.filter(r => r.status === currentTab);
+  const q = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
+  if (!q) return list;
+  return list.filter(r =>
+    (r.name || '').toLowerCase().includes(q) ||
+    (r.email || '').toLowerCase().includes(q) ||
+    (r.phone || '').toLowerCase().includes(q) ||
+    (r.party_date || '').toLowerCase().includes(q) ||
+    (r.message || '').toLowerCase().includes(q)
+  );
 }
 
 // ── Counts ────────────────────────────────────────────────────────────────────
