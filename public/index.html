@@ -553,7 +553,118 @@ header {
   margin: 20px 0;
 }
 
-/* ── Responsive ──────────────────────────────────────────────────────────── */
+/* ── Calendar ─────────────────────────────────────────────────────────────── */
+.cal-grid-wrap {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.cal-day-header {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--paper);
+  padding: 8px 4px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.cal-cell {
+  min-height: 90px;
+  padding: 6px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--cream);
+  vertical-align: top;
+  position: relative;
+}
+
+.cal-cell:nth-child(7n) { border-right: none; }
+.cal-cell.other-month { background: var(--paper); opacity: 0.6; }
+.cal-cell.today { background: #fffbf0; }
+
+.cal-cell-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.cal-cell.today .cal-cell-num {
+  background: var(--red);
+  color: #fff;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cal-event {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  padding: 3px 6px;
+  border-radius: 3px;
+  margin-bottom: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 0.15s;
+}
+.cal-event:hover { opacity: 0.8; }
+.cal-event.status-new       { background: var(--blue-lt);  color: var(--blue); }
+.cal-event.status-pending   { background: var(--amber-lt); color: var(--amber); }
+.cal-event.status-confirmed { background: var(--green-lt); color: var(--green); }
+.cal-event.status-past      { background: var(--border);   color: var(--muted); }
+
+.cal-list-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.cal-list-item:hover { background: rgba(200,23,27,0.05); }
+
+.cal-list-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.cal-list-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  min-width: 160px;
+}
+
+.cal-list-name {
+  font-weight: 600;
+  font-size: 14px;
+  flex: 1;
+}
+
+.cal-list-guests {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+
 @media (max-width: 700px) {
   .list-pane { width: 100%; border-right: none; }
   .main { flex-direction: column; }
@@ -586,6 +697,8 @@ header {
   <button class="tab"        data-tab="pending"   onclick="switchTab('pending')">Pending <span class="tab-count" id="count-pending">0</span></button>
   <button class="tab"        data-tab="confirmed" onclick="switchTab('confirmed')">Confirmed <span class="tab-count" id="count-confirmed">0</span></button>
   <button class="tab"        data-tab="past"      onclick="switchTab('past')">Past <span class="tab-count" id="count-past">0</span></button>
+  <div style="flex:1"></div>
+  <button class="tab"        data-tab="calendar"  onclick="switchTab('calendar')">📅 Calendar</button>
 </nav>
 
 <!-- ── Main Layout ── -->
@@ -606,7 +719,43 @@ header {
   </div>
 </div>
 
-<!-- ── Reply Modal ── -->
+<!-- ── Calendar View ── -->
+<div id="calendar-view" style="display:none; flex:1; overflow-y:auto; background:var(--cream); padding:32px;">
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <button class="btn btn-outline" onclick="calPrev()">← Prev</button>
+      <div id="cal-title" style="font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:1px; color:var(--ink); min-width:200px; text-align:center;"></div>
+      <button class="btn btn-outline" onclick="calNext()">Next →</button>
+    </div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <span style="font-family:'DM Mono',monospace; font-size:10px; background:var(--blue-lt); color:var(--blue); padding:4px 10px; border-radius:4px; letter-spacing:1px;">NEW</span>
+      <span style="font-family:'DM Mono',monospace; font-size:10px; background:var(--amber-lt); color:var(--amber); padding:4px 10px; border-radius:4px; letter-spacing:1px;">PENDING</span>
+      <span style="font-family:'DM Mono',monospace; font-size:10px; background:var(--green-lt); color:var(--green); padding:4px 10px; border-radius:4px; letter-spacing:1px;">CONFIRMED</span>
+      <span style="font-family:'DM Mono',monospace; font-size:10px; background:var(--border); color:var(--muted); padding:4px 10px; border-radius:4px; letter-spacing:1px;">PAST</span>
+    </div>
+  </div>
+
+  <!-- Month Grid -->
+  <div id="cal-grid" style="margin-bottom:40px;"></div>
+
+  <!-- Upcoming List -->
+  <div style="font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:1px; color:var(--ink); margin-bottom:16px;">Upcoming Parties</div>
+  <div id="cal-list"></div>
+</div>
+
+<!-- ── Calendar Event Modal ── -->
+<div class="modal-overlay hidden" id="cal-modal">
+  <div class="modal" style="max-width:420px;">
+    <div id="cal-modal-status-bar" style="height:5px; border-radius:4px 4px 0 0; margin:-28px -28px 20px -28px;"></div>
+    <div class="modal-title" id="cal-modal-name"></div>
+    <div class="modal-sub" id="cal-modal-date"></div>
+    <div id="cal-modal-body" style="margin-top:12px;"></div>
+    <div class="modal-actions" style="margin-top:20px;">
+      <button class="btn btn-outline" onclick="closeCalModal()">Close</button>
+      <button class="btn btn-primary" id="cal-modal-open-btn">Open Request →</button>
+    </div>
+  </div>
+</div>
 <div class="modal-overlay hidden" id="reply-modal">
   <div class="modal">
     <div class="modal-title">Reply to Guest</div>
@@ -679,7 +828,19 @@ async function deleteRequest(id) {
 function switchTab(tab) {
   currentTab = tab;
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
-  renderList();
+
+  const main = document.getElementById('main');
+  const calView = document.getElementById('calendar-view');
+
+  if (tab === 'calendar') {
+    main.style.display = 'none';
+    calView.style.display = 'block';
+    renderCalendar();
+  } else {
+    main.style.display = 'flex';
+    calView.style.display = 'none';
+    renderList();
+  }
 }
 
 function filteredRequests() {
@@ -904,6 +1065,171 @@ Looking forward to it!
 
 — The Pizza Box NY
 Bleecker Street, Greenwich Village`;
+}
+
+// ── Calendar ──────────────────────────────────────────────────────────────────
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+
+const STATUS_COLORS = {
+  new:       '#1A4B8C',
+  pending:   '#B8680A',
+  confirmed: '#2A6B3F',
+  past:      '#8A7A60',
+};
+
+function parsePartyDate(str) {
+  if (!str) return null;
+  try {
+    const d = new Date(str);
+    if (!isNaN(d)) return d;
+    // Try stripping ordinal suffixes: "June 13th 2026" → "June 13 2026"
+    const cleaned = str.replace(/(\d+)(st|nd|rd|th)/gi, '$1');
+    const d2 = new Date(cleaned);
+    if (!isNaN(d2)) return d2;
+  } catch {}
+  return null;
+}
+
+function calPrev() {
+  calMonth--;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+function calNext() {
+  calMonth++;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-title').textContent = `${monthNames[calMonth]} ${calYear}`;
+
+  const today = new Date();
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const daysInPrev = new Date(calYear, calMonth, 0).getDate();
+
+  // Map requests to dates
+  const eventsByDate = {};
+  allRequests.forEach(r => {
+    const d = parsePartyDate(r.party_date);
+    if (!d) return;
+    const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    if (!eventsByDate[key]) eventsByDate[key] = [];
+    eventsByDate[key].push(r);
+  });
+
+  // Build grid
+  const dayHeaders = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let html = `<div class="cal-grid-wrap">`;
+  dayHeaders.forEach(d => { html += `<div class="cal-day-header">${d}</div>`; });
+
+  let cells = [];
+  // Prev month fill
+  for (let i = firstDay - 1; i >= 0; i--) {
+    cells.push({ day: daysInPrev - i, month: calMonth - 1, year: calYear, other: true });
+  }
+  // Current month
+  for (let d = 1; d <= daysInMonth; d++) {
+    cells.push({ day: d, month: calMonth, year: calYear, other: false });
+  }
+  // Next month fill
+  const remaining = 42 - cells.length;
+  for (let d = 1; d <= remaining; d++) {
+    cells.push({ day: d, month: calMonth + 1, year: calYear, other: true });
+  }
+
+  cells.forEach(cell => {
+    const isToday = !cell.other &&
+      cell.day === today.getDate() &&
+      cell.month === today.getMonth() &&
+      cell.year === today.getFullYear();
+
+    const key = `${cell.year}-${cell.month}-${cell.day}`;
+    const events = eventsByDate[key] || [];
+
+    html += `<div class="cal-cell ${cell.other ? 'other-month' : ''} ${isToday ? 'today' : ''}">`;
+    html += `<div class="cal-cell-num">${cell.day}</div>`;
+    events.forEach(r => {
+      html += `<div class="cal-event status-${r.status}" onclick="openCalModal('${r.id}')" title="${esc(r.name)}">${esc(r.name.split(' ')[0])}</div>`;
+    });
+    html += `</div>`;
+  });
+
+  html += `</div>`;
+  document.getElementById('cal-grid').innerHTML = html;
+
+  // Upcoming list — all requests with a parseable future date, sorted
+  const upcoming = allRequests
+    .map(r => ({ r, d: parsePartyDate(r.party_date) }))
+    .filter(({ d }) => d !== null)
+    .sort((a, b) => a.d - b.d);
+
+  if (!upcoming.length) {
+    document.getElementById('cal-list').innerHTML = `<div style="color:var(--muted);font-style:italic;font-size:14px;">No parties with dates yet.</div>`;
+    return;
+  }
+
+  document.getElementById('cal-list').innerHTML = upcoming.map(({ r, d }) => {
+    const color = STATUS_COLORS[r.status] || '#8A7A60';
+    const dateStr = d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+    return `
+      <div class="cal-list-item" onclick="openCalModal('${r.id}')">
+        <div class="cal-list-dot" style="background:${color}"></div>
+        <div class="cal-list-date">${dateStr}</div>
+        <div class="cal-list-name">${esc(r.name)}</div>
+        <div class="cal-list-guests">${r.guest_count ? `👥 ${esc(r.guest_count)}` : ''}</div>
+        <span class="status-pill status-${r.status}">${r.status}</span>
+      </div>`;
+  }).join('');
+}
+
+function openCalModal(id) {
+  const r = allRequests.find(x => x.id === id);
+  if (!r) return;
+
+  const color = STATUS_COLORS[r.status] || '#8A7A60';
+  const bgMap = { new: '#DCE9F8', pending: '#FDF0DC', confirmed: '#D4EDDA', past: '#D4C9A8' };
+
+  document.getElementById('cal-modal-status-bar').style.background = color;
+  document.getElementById('cal-modal-name').textContent = r.name;
+  document.getElementById('cal-modal-date').textContent = r.party_date || 'Date not specified';
+  document.getElementById('cal-modal-body').innerHTML = `
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+      <div class="info-block">
+        <div class="info-label">Status</div>
+        <div><span class="status-pill status-${r.status}">${r.status}</span></div>
+      </div>
+      <div class="info-block">
+        <div class="info-label">Guests</div>
+        <div class="info-value">${esc(r.guest_count) || '—'}</div>
+      </div>
+      <div class="info-block">
+        <div class="info-label">Email</div>
+        <div class="info-value mono" style="font-size:11px">${r.email ? `<a href="mailto:${esc(r.email)}" style="color:var(--red)">${esc(r.email)}</a>` : '—'}</div>
+      </div>
+      <div class="info-block">
+        <div class="info-label">Phone</div>
+        <div class="info-value mono" style="font-size:11px">${r.phone ? `<a href="tel:${esc(r.phone)}" style="color:var(--red)">${esc(r.phone)}</a>` : '—'}</div>
+      </div>
+    </div>
+    ${r.notes ? `<div class="info-block"><div class="info-label">Notes</div><div style="font-size:13px;margin-top:4px">${esc(r.notes)}</div></div>` : ''}
+  `;
+
+  document.getElementById('cal-modal-open-btn').onclick = () => {
+    closeCalModal();
+    switchTab('all');
+    setTimeout(() => selectRequest(id), 100);
+  };
+
+  document.getElementById('cal-modal').classList.remove('hidden');
+}
+
+function closeCalModal() {
+  document.getElementById('cal-modal').classList.add('hidden');
 }
 
 // ── Admin ─────────────────────────────────────────────────────────────────────
