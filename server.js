@@ -65,7 +65,17 @@ app.post('/webhook/party-request', (req, res) => {
   }
 
   const db = readData();
+// Duplicate check — skip if same email AND same received_at already exists
+  const duplicate = db.requests.find(r => {
+    const sameEmail = r.email && email && r.email.toLowerCase() === email.toLowerCase();
+    const sameDate = r.received_at && received_at && r.received_at === received_at;
+    return sameEmail && sameDate;
+  });
 
+  if (duplicate) {
+    console.log(`⏭️  Duplicate skipped: ${email} (${received_at})`);
+    return res.json({ ok: true, duplicate: true, id: duplicate.id });
+  }
   const entry = {
     id: generateId(),
     status: 'new',          // new → pending → confirmed → past
